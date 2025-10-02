@@ -1,6 +1,5 @@
 """Generic ingestion orchestrator using registered plugins.
 
-Example:
   python -m src.dataset.orchestrator --plugin us_fda_enforcement --since 2025-09-01 --until 2025-10-02 --output data_output
 """
 from __future__ import annotations

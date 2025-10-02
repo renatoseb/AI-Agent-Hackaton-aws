@@ -10,6 +10,8 @@ import os
 import pathlib
 import tempfile
 from typing import Iterable
+import sys
+import platform
 
 import pandas as pd
 
@@ -55,16 +57,46 @@ def write_json_lines(records: Iterable[dict], dest_uri: str):
 
 
 def write_parquet(df: pd.DataFrame, dest_uri: str):
+    """Write dataframe as parquet either locally or to S3.
+
+    Uses an in-memory buffer for S3 to avoid Windows NamedTemporaryFile permission issues.
+    """
     if is_s3(dest_uri):
         if not boto3:
             raise RuntimeError("boto3 not available to write to S3")
         bucket, key = split_s3_uri(dest_uri)
-        with tempfile.NamedTemporaryFile(suffix=".parquet") as tmp:
-            df.to_parquet(tmp.name, index=False)
-            boto3.client("s3").upload_file(tmp.name, bucket, key)
+        # Try in-memory first (pyarrow)
+        try:
+            import pyarrow as pa  # type: ignore
+            import pyarrow.parquet as pq  # type: ignore
+            table = pa.Table.from_pandas(df, preserve_index=False)
+            buf = io.BytesIO()
+            pq.write_table(table, buf)
+            buf.seek(0)
+            boto3.client("s3").upload_fileobj(buf, bucket, key)
+            return
+        except Exception:
+            # Fallback to temp file if pyarrow path fails
+            with tempfile.NamedTemporaryFile(suffix=".parquet", delete=False) as tmp:
+                temp_name = tmp.name
+            try:
+                df.to_parquet(temp_name, index=False)
+                boto3.client("s3").upload_file(temp_name, bucket, key)
+            finally:
+                try:
+                    os.remove(temp_name)
+                except OSError:
+                    pass
     else:
         ensure_local_dir(os.path.dirname(dest_uri))
-        df.to_parquet(dest_uri, index=False)
+        try:
+            df.to_parquet(dest_uri, index=False)
+        except PermissionError:
+            # retry with pyarrow direct write (some FS policies block fastparquet temp patterns)
+            import pyarrow as pa  # type: ignore
+            import pyarrow.parquet as pq  # type: ignore
+            table = pa.Table.from_pandas(df, preserve_index=False)
+            pq.write_table(table, dest_uri)
 
 
 def read_state(state_root: str, filename: str) -> dict | None:
