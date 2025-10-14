@@ -1,0 +1,66 @@
+Column: _id | Coverage: 100.0% | Unique: 1178122
+  Most common: [('0000105000011', 1), ('0000105000042', 1), ('0000105000059', 1)]
+
+Column: _keywords | Coverage: 100.0% | Unique: 1116712
+  Most common: [('[]', 11461), ("['no-gluten']", 143), ("['green-dot']", 141)]
+
+Column: additives_n | Coverage: 100.0% | Unique: 47
+  Most common: [(0, 538835), (1, 193716), (2, 127441)]
+
+Column: additives_tags | Coverage: 100.0% | Unique: 151754
+  Most common: [('[]', 538835), ("['en:e330']", 36687), ("['en:e322', 'en:e322i']", 25018)]
+
+Column: brands | Coverage: 82.3% | Unique: 196540
+  Most common: [('Carrefour', 12129), ('U', 6314), ('Auchan', 5740)]
+
+Column: brands_tags | Coverage: 84.5% | Unique: 175679
+  Most common: [('[]', 25697), ("['xx:carrefour']", 12106), ("['xx:u']", 6335)]
+
+Column: categories | Coverage: 85.0% | Unique: 230440
+  Most common: [('undefined', 34962), ('Snacks', 31610), ('Beverages', 14686)]
+
+Column: categories_tags | Coverage: 88.5% | Unique: 140877
+  Most common: [('[]', 39506), ("['en:undefined']", 35037), ("['en:snacks']", 32651)]
+
+Column: code | Coverage: 100.0% | Unique: 1178098
+  Most common: [('0059527070430', 2), ('0059527171687', 2), ('0059527501552', 2)]
+
+Column: countries | Coverage: 99.4% | Unique: 18318
+  Most common: [('United States', 346064), ('France', 228877), ('en:United States', 27045)]
+
+Column: countries_tags | Coverage: 99.8% | Unique: 8163
+  Most common: [("['en:united-states']", 407597), ("['en:france']", 266894), ("['en:germany']", 77793)]
+
+Column: created_t | Coverage: 100.0% | Unique: 921294
+  Most common: [(1587666201, 27), (1587656432, 23), (1587669823, 22)]
+
+Column: ingredients_text | Coverage: 100.0% | Unique: 994131
+  Most common: [('undefined', 36282), ('Poulet', 531), ('Carbonated water, natural flavor.', 452)]
+
+Column: last_modified_t | Coverage: 100.0% | Unique: 957914
+  Most common: [(1659358131, 73), (1659358133, 60), (1659358132, 60)]
+
+Column: nutrient_levels | Coverage: 100.0% | Unique: 2483
+  Most common: [('{}', 278583), ("{'salt': 'low', 'sugars': 'high', 'saturated-fat': 'low', 'fat': 'low'}", 7585), ("{'sugars': 'high', 'salt': 'low', 'fat': 'low', 'saturated-fat': 'low'}", 7145)]
+
+Column: nutriments | Coverage: 100.0% | Unique: 1107637
+  Most common: [("{'fruits-vegetables-nuts-estimate-from-ingredients_serving': 0, 'fruits-vegetables-legumes-estimate-from-ingredients_serving': 0, 'fruits-vegetables-legumes-estimate-from-ingredients_100g': 0, 'fruits-vegetables-nuts-estimate-from-ingredients_100g': 0}", 3119), ("{'fruits-vegetables-nuts-estimate-from-ingredients_100g': 0, 'fruits-vegetables-legumes-estimate-from-ingredients_100g': 0, 'fruits-vegetables-legumes-estimate-from-ingredients_serving': 0, 'fruits-vegetables-nuts-estimate-from-ingredients_serving': 0}", 3071), ("{'fruits-vegetables-legumes-estimate-from-ingredients_serving': 0, 'fruits-vegetables-nuts-estimate-from-ingredients_serving': 0, 'fruits-vegetables-legumes-estimate-from-ingredients_100g': 0, 'fruits-vegetables-nuts-estimate-from-ingredients_100g': 0}", 2265)]
+
+Column: nutriscore | Coverage: 100.0% | Unique: 1177870
+  Most common: [("{'2021': {'data': {'is_beverage': 0, 'energy': None, 'sodium': None, 'is_cheese': 0, 'saturated_fat': None, 'sugars': None, 'fruits_vegetables_nuts_colza_walnut_olive_oils': 0, 'is_water': 0, 'is_fat': 0, 'proteins': None, 'fiber': 0}, 'nutriscore_applicable': 1, 'category_available': 1, 'nutriscore_computed': 0, 'nutrients_available': 0, 'grade': 'unknown'}, '2023': {'nutriscore_applicable': 1, 'data': {'is_water': 0, 'fruits_vegetables_legumes': 0, 'proteins': None, 'salt': None, 'is_red_meat_product': 0, 'is_fat_oil_nuts_seeds': 0, 'fiber': None, 'energy': None, 'is_cheese': 0, 'is_beverage': 0, 'saturated_fat': None, 'sugars': None}, 'grade': 'unknown', 'nutrients_available': 0, 'nutriscore_computed': 0, 'category_available': 1}}", 2), ("{'2021': {'nutrients_available': 0, 'grade': 'unknown', 'category_available': 1, 'nutriscore_computed': 0, 'data': {'energy': None, 'sodium': None, 'is_cheese': 0, 'is_beverage': 1, 'saturated_fat': None, 'sugars': None, 'fruits_vegetables_nuts_colza_walnut_olive_oils': 0, 'is_water': 0, 'proteins': None, 'is_fat': 0, 'fiber': 0}, 'nutriscore_applicable': 1}, '2023': {'nutriscore_applicable': 1, 'data': {'fiber': None, 'is_fat_oil_nuts_seeds': 0, 'salt': None, 'is_red_meat_product': 0, 'proteins': None, 'fruits_vegetables_legumes': None, 'is_water': 0, 'non_nutritive_sweeteners': 0, 'sugars': None, 'saturated_fat': None, 'is_beverage': 1, 'energy': None, 'is_cheese': 0}, 'grade': 'unknown', 'nutrients_available': 0, 'nutriscore_computed': 0, 'category_available': 1}}", 2), ("{'2021': {'nutriscore_computed': 0, 'grade': 'unknown', 'nutriscore_applicable': 0, 'category_available': 0, 'data': {'is_fat': 0, 'fiber': 0, 'is_water': 0, 'fruits_vegetables_nuts_colza_walnut_olive_oils': 0, 'energy': None, 'proteins': None, 'sugars': None, 'sodium': None, 'saturated_fat': None, 'is_cheese': 0, 'is_beverage': 0}, 'nutrients_available': 0}, '2023': {'nutrients_available': 0, 'data': {'fruits_vegetables_legumes': 0, 'saturated_fat': None, 'is_fat_oil_nuts_seeds': 0, 'is_cheese': 0, 'is_beverage': 0, 'is_red_meat_product': 0, 'is_water': 0, 'fiber': 0, 'energy': None, 'salt': None, 'sugars': None, 'proteins': None}, 'category_available': 0, 'grade': 'unknown', 'nutriscore_applicable': 0, 'nutriscore_computed': 0}}", 2)]
+
+Column: product_name | Coverage: 96.7% | Unique: 827556
+  Most common: [('Ice cream', 602), ('Soda', 479), ('Spaghetti', 459)]
+
+Column: product_type | Coverage: 100.0% | Unique: 2
+  Most common: [('food', 1177191), ('product', 360)]
+
+Column: quantity | Coverage: 57.7% | Unique: 47119
+  Most common: [('1 serving(s)', 22269), ('500 g', 21062), ('200 g', 20341)]
+
+Column: serving_size | Coverage: 55.6% | Unique: 68982
+  Most common: [('100g', 41212), ('1 ONZ (28 g)', 17547), ('100 g', 13408)]
+
+Column: traces_tags | Coverage: 100.0% | Unique: 15958
+  Most common: [('[]', 970220), ("['en:nuts']", 19708), ("['en:milk']", 9325)]
+
