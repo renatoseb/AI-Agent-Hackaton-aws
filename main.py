@@ -51,8 +51,7 @@ if __name__ == "__main__":
         except Exception as e:
             print("⚠️ Warning: failed to insert user message to DB:", e)
 
-        # Build chat history JSON for the intention catching model (keeps compatibility)
-        # We'll transform messages_log into the simple messages array expected by prompts
+        # Build chat history JSON for the intention catching model 
         reduced_messages = []
         for ev in messages_log:
             # Normalize events into the simple messages format expected by the prompts
@@ -92,9 +91,8 @@ if __name__ == "__main__":
         except Exception as e:
             print("⚠️ Warning: failed to insert tool_choice to DB:", e)
 
-        # Execute tool and capture result (ejecutar_tool will be adapted to accept the log)
-        # Execute tool and capture result (ejecutar_tool adapted to accept conn and session_id)
-        tool_result = ejecutar_tool(tool_response, messages_log, conn=conn, session_id=session_id)
+        # Execute tool and capture result (ejecutar_tool adapted to accept conn, session_id and processor)
+        tool_result = ejecutar_tool(tool_response, intention_prompt, messages_log, conn=conn, session_id=session_id, processor=processor)
         ev = {"ts": now_ts(), "type": "tool_result", "content": tool_result, "meta": {}}
         messages_log.append(ev)
         try:

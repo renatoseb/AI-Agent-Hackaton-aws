@@ -1,9 +1,10 @@
-from lambdas.Consultar_Deuda import Consultar_Deuda
+from lambdas.tools import *
 from db.messages import insert_message
+import json
 import time
 
 
-def ejecutar_tool(response, messages_log=None, conn=None, session_id=None):
+def ejecutar_tool(response, intention, messages_log=None, conn=None, session_id=None, processor = None):
     """
     Recibe la respuesta del selector de tools (formato internal) y opcionalmente el messages_log.
     Extrae el TOOL y Thought, registra eventos en messages_log, y ejecuta la función correspondiente.
@@ -60,13 +61,13 @@ def ejecutar_tool(response, messages_log=None, conn=None, session_id=None):
                 except Exception:
                     pass
 
-        # Resolve function name to actual callable
+    # Resolve function name to actual callable
         func = globals().get(tool_name)
         if func is None:
             print(f"⚠️ La función '{tool_name}' no está definida en este módulo.")
             # try importing from lambdas dynamically
             try:
-                module = __import__(f"lambdas.{tool_name}", fromlist=[tool_name])
+                module = __import__(f"lambdas.{tool_name}.{tool_name}", fromlist=[tool_name])
                 func = getattr(module, tool_name)
             except Exception:
                 func = None
@@ -74,15 +75,51 @@ def ejecutar_tool(response, messages_log=None, conn=None, session_id=None):
         if func is None:
             return {"error": "tool_not_found", "tool": tool_name}
 
+        # Prepare input_data for the tool. If processor is available, ask the model to extract a JSON with variables
+        input_data = {}
+        # If the response contains more structured content, merge it
+        if isinstance(response, dict):
+            # if the model returned the parsed json already, include it
+            try:
+                parsed = response.get("content", [])[0].get("text")
+                if isinstance(parsed, dict):
+                    input_data.update(parsed)
+            except Exception:
+                pass
+
+        # If we have an intention string and a processor, ask the model to extract parameters as JSON
+        if processor is not None and isinstance(intention, str):
+            extractor_prompt = (
+                "Extrae en JSON los parámetros relevantes de la siguiente intención. "
+                "Devuelve únicamente un objeto JSON.\n\nINTENTION:\n" + intention + "\n\n" +
+                "Si no hay parámetros devuelve {}."
+            )
+            try:
+                extracted = processor.process_request(extractor_prompt)
+                # try to parse JSON from the model
+                try:
+                    parsed = json.loads(extracted)
+                    if isinstance(parsed, dict):
+                        input_data.update(parsed)
+                except Exception:
+                    # ignore parse error; pass raw extracted as 'extracted_text'
+                    input_data.setdefault("extracted_text", extracted)
+            except Exception:
+                pass
+
         # Ejecuta la función y captura su resultado
         try:
-            result = func()
+            # Prefer calling with signature (input_data, intention, processor, conn, session_id)
+            result = func(input_data, intention, processor, conn, session_id)
         except TypeError:
-            # try calling with messages_log if tool expects args
+            # try more legacy signatures
             try:
-                result = func(messages_log)
+                result = func(input_data)
             except Exception as e:
-                result = {"error": "tool_execution_failed", "exc": str(e)}
+                try:
+                    result = func()
+                except Exception as e2:
+                    result = {"error": "tool_execution_failed", "exc": str(e2)}
 
         # persist tool_result to messages_log and DB
         if messages_log is not None:
