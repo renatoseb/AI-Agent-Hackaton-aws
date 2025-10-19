@@ -58,4 +58,4 @@ def Productos_FDA(intention: str = None, processor=None, conn=None, session_id=N
 
 
 if __name__ == "__main__":
-    print(Check_Producto({"q": "leche"}))
+    print(Productos_FDA({"q": "leche"}))

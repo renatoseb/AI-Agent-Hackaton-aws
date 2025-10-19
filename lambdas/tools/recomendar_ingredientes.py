@@ -86,4 +86,4 @@ def Recomendar_Ingredientes(intention: str = None, processor=None, conn=None, se
 
 
 if __name__ == "__main__":
-    print(Sugerir_Por_Ingredientes({"ingredients": ["tomate","lechuga"]}))
+    print(Recomendar_Ingredientes({"ingredients": ["tomate","lechuga"]}))
