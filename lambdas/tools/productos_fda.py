@@ -8,7 +8,7 @@ from typing import Dict, Any
 from prompts.fda_product_extraction_en import extract_fda_query_fewshot
 from prompts.fda_resopnse_format_en import generate_fda_response_fewshot
 
-def Check_Producto(intention: str = None, processor=None, conn=None, session_id=None):
+def Productos_FDA(intention: str = None, processor=None, conn=None, session_id=None):
     q = None
 
     # If we have a processor, run the few-shot extractor to get a precise q (product name or GTIN)

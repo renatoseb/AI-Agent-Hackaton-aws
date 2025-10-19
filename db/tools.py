@@ -41,11 +41,11 @@ if __name__ == '__main__':
         },
         {
             "toolname": "Recomendar_Receta",
-            "tooldescription": '''"Activa si el usuario pide recomendaciones de recetas, comidas o ideas para preparar alimentos según sus preferencias o tipo de dieta.  \nKeywords: receta, recetas, comida, preparar, ideas, almuerzo, cena, desayuno, saludable, recomendación, sugerencia.  \n🚫 No confundir con: consultas sobre reportes FDA o información de un producto específico."'''
+            "tooldescription": '''"Activa si el usuario solicita recomendaciones generales de comidas o recetas **sin mencionar ingredientes específicos**, normalmente asociadas a momentos del día, tipos de comida o estilos de alimentación.  \nEj: 'recetas para desayuno', 'ideas de cena ligera', 'qué puedo cocinar hoy', 'comidas saludables para bajar de peso'.  \nKeywords: receta, recetas, comida, preparar, ideas, almuerzo, cena, desayuno, saludable, recomendación, sugerencia, menú, dieta.  \n🚫 No confundir con: solicitudes que incluyan ingredientes concretos o restricciones alimentarias (eso activa *Recomendar_Ingredientes*)."'''
         },
         {
             "toolname": "Recomendar_Ingredientes",
-            "tooldescription": '''"Activa si el usuario indica restricciones, alergias o ingredientes específicos y desea que se recomienden recetas o preparaciones adecuadas.  \nKeywords: sin gluten, sin azúcar, sin lactosa, alergia, intolerancia, vegetariano, vegano, sin carne, evitar, ingredientes permitidos.  \n🚫 No confundir con: búsquedas generales de recetas sin restricciones o verificaciones FDA."'''
+            "tooldescription": '''"Activa si el usuario menciona **ingredientes concretos** o establece **restricciones alimentarias** (por ejemplo, alergias o ingredientes a evitar) y desea que se sugieran recetas adecuadas.  \nEj: 'tengo pollo y arroz, qué puedo hacer', 'sin gluten y sin azúcar', 'recetas con atún y palta', 'comidas veganas sin carne'.  \nKeywords: con, sin, tengo, usar, incluir, evitar, sin gluten, sin azúcar, sin lactosa, alergia, intolerancia, vegetariano, vegano, ingredientes permitidos.  \n🚫 No confundir con: búsquedas generales de recetas sin ingredientes específicos o basadas en tipo de comida o horario (eso activa *Recomendar_Receta*)."'''
         }
     ]
     create_tables(conn)

@@ -11,7 +11,7 @@ from prompts.extract_ingredients import extract_ingredients_query_fewshot
 from prompts.recipe_response_format_en import format_results_with_warnings_fewshot
 
 
-def Sugerir_Por_Ingredientes(intention: str = None, processor=None, conn=None, session_id=None):
+def Recomendar_Ingredientes(intention: str = None, processor=None, conn=None, session_id=None):
     ingredients = []
     limit = 5
 
