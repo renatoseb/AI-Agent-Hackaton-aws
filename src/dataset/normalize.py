@@ -142,6 +142,7 @@ def normalize_record(category: str, raw: Dict[str, Any]) -> Dict[str, Any]:
     recall_number = raw.get("recall_number") or raw.get("event_id")
     classification = str(raw.get("classification", ""))
     classification = classification.strip().upper() if classification else ""
+    classification = classification.split()[1]
     if classification not in CLASSIFICATION_ALLOWED:
         classification = "unknown"
     reason = raw.get("reason_for_recall") or raw.get("reason")
@@ -156,6 +157,7 @@ def normalize_record(category: str, raw: Dict[str, Any]) -> Dict[str, Any]:
     status = (raw.get("status") or "").lower() or "unknown"
 
     openfda = raw.get("openfda", {}) or {}
+    print("openfda", openfda)
     gtin = None
     if isinstance(openfda, dict):
         upc = openfda.get("upc")

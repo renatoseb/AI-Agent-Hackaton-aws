@@ -16,6 +16,7 @@ from .common.schema import CANONICAL_COLUMN_NAMES
 
 # Ensure plugin modules are imported so they self-register
 from . import fda_plugin  # type: ignore  # registers us_fda_enforcement
+from . import digemid_plugin  # type: ignore  # registers pe_digemid_alerts
 
 log = logging.getLogger("orchestrator")
 
