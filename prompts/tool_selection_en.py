@@ -1,4 +1,7 @@
-<start_of_turn>user
+def get_tool_selection_prompt(tools, chat_history: str) -> str:
+    tools_str = str(tools) if tools else "No tools available"
+    
+    return f"""<start_of_turn>user
 ROLE:
 You are **NutriBot**, an expert assistant in healthy eating, recipes and food safety.  
 Always respond in the same language as the query.  
@@ -9,7 +12,7 @@ Do not respond conversationally or add text outside the JSON.
 ---
 
 === Context ===  
-El usuario busca recetas de pasteles sin fresas.  
+""" + chat_history + """  
 Your task is to identify the correct tool (TOOL) from the complete list of tools and briefly explain the reason in the **Thought** field.
 
 ---
@@ -43,19 +46,7 @@ OUTPUT:
 
 === TOOLS ===
 
-TOOL: Productos_FDA - "Activa si el usuario solicita información sobre alertas, reportes o retiros de productos registrados por la FDA (Food and Drug Administration).  
-Keywords: FDA, producto reportado, alerta sanitaria, retiro, advertencia, revisión FDA, producto prohibido, producto contaminado.  
-🚫 No confundir con: consultas sobre recetas o información nutricional."
-
-TOOL: Recomendar_Receta - "Activa si el usuario pide recomendaciones de recetas, comidas o ideas para preparar alimentos según sus preferencias o tipo de dieta.  
-Keywords: receta, recetas, comida, preparar, ideas, almuerzo, cena, desayuno, saludable, recomendación, sugerencia.  
-🚫 No confundir con: consultas sobre reportes FDA o información de un producto específico."
-
-TOOL: Recomendar_Ingredientes - "Activa si el usuario indica restricciones, alergias o ingredientes específicos y desea que se recomienden recetas o preparaciones adecuadas.  
-Keywords: sin gluten, sin azúcar, sin lactosa, alergia, intolerancia, vegetariano, vegano, sin carne, evitar, ingredientes permitidos.  
-🚫 No confundir con: búsquedas generales de recetas sin restricciones o verificaciones FDA."
-
----
+""" + tools_str + """---
 
 === Final Instructions ===  
 - Your output **must be exactly a JSON** with two keys: `"TOOL"` and `"Thought"`.  
@@ -66,3 +57,4 @@ Keywords: sin gluten, sin azúcar, sin lactosa, alergia, intolerancia, vegetaria
 - **Respond only with the JSON.**
 <end_of_turn>
 <start_of_turn>model
+"""

@@ -1,4 +1,11 @@
-from lambdas.tools import *
+import importlib
+import importlib.util
+import os
+try:
+    # attempt to import the package to ensure it's on sys.path
+    import lambdas.tools
+except Exception:
+    pass
 from db.messages import insert_message
 import json
 import time
@@ -61,60 +68,101 @@ def ejecutar_tool(response, intention, messages_log=None, conn=None, session_id=
                 except Exception:
                     pass
 
-    # Resolve function name to actual callable
-        func = globals().get(tool_name)
+        # Resolve function name to actual callable
+        func = globals().get(tool_name) or globals().get(tool_name.lower())
         if func is None:
-            print(f"⚠️ La función '{tool_name}' no está definida en este módulo.")
-            # try importing from lambdas dynamically
+            print(f"⚠️ La función '{tool_name}' no está definida en globals(); intentar import dinámico...")
+            # try importing the module under lambdas.tools.<snake_case>
+            mod_name = f"lambdas.tools.{tool_name.lower()}"
+            import traceback
             try:
-                module = __import__(f"lambdas.{tool_name}.{tool_name}", fromlist=[tool_name])
-                func = getattr(module, tool_name)
-            except Exception:
-                func = None
+                module = importlib.import_module(mod_name)
+            except Exception as e:
+                print(f"Import error for {mod_name}: {e}")
+                print(traceback.format_exc())
+                # try with simple snake-case conversion (Recomendar_Receta -> recomendar_receta)
+                try:
+                    snake = tool_name.replace(" ", "_").replace("-", "_").lower()
+                    module = importlib.import_module(f"lambdas.tools.{snake}")
+                except Exception as e2:
+                    pass
+                    # As a last resort, try loading the module directly from the filesystem path
+                    try:
+                        base = os.path.dirname(os.path.dirname(__file__))
+                        tools_path = os.path.join(base, "tools")
+                        snake = tool_name.replace(" ", "_").replace("-", "_").lower()
+                        file_path = os.path.join(tools_path, f"{snake}.py")
+                        if os.path.exists(file_path):
+                            try:
+                                spec = importlib.util.spec_from_file_location(f"lambdas.tools.{snake}", file_path)
+                                module = importlib.util.module_from_spec(spec)
+                                spec.loader.exec_module(module)
+                            except Exception as e3:
+                                print(f"File import failed for {file_path}: {e3}")
+                                print(traceback.format_exc())
+                                module = None
+                        else:
+                            print(f"❌ No se encontró archivo de módulo para tool {tool_name} en {file_path}: {e}; {e2}")
+                            module = None
+                    except Exception as e3:
+                        print(f"❌ No se pudo cargar por archivo para tool {tool_name}: {e}; {e2}; {e3}")
+                        print(traceback.format_exc())
+                        module = None
+
+            if module is not None:
+                # Try to get the attribute by exact name, then case-insensitive fallback
+                if hasattr(module, tool_name):
+                    func = getattr(module, tool_name)
+                else:
+                    # search for attribute matching ignoring case/underscores
+                    candidates = [name for name in dir(module) if name.lower().replace("_","") == tool_name.lower().replace("_","")]
+                    if candidates:
+                        func = getattr(module, candidates[0])
+                    else:
+                        # as last resort, try function named in snake_case
+                        snake_fn = tool_name.replace(" ", "_").lower()
+                        if hasattr(module, snake_fn):
+                            func = getattr(module, snake_fn)
+                        else:
+                            func = None
+
+            # If still not found, scan all files in lambdas/tools directory and try to locate the function
+            if func is None:
+                try:
+                    tools_dir = os.path.join(os.path.dirname(__file__), "tools")
+                    if os.path.isdir(tools_dir):
+                        for fname in os.listdir(tools_dir):
+                            if not fname.endswith(".py") or fname.startswith("__"):
+                                continue
+                            path = os.path.join(tools_dir, fname)
+                            try:
+                                spec = importlib.util.spec_from_file_location(f"lambdas.tools.{fname[:-3]}", path)
+                                mod = importlib.util.module_from_spec(spec)
+                                spec.loader.exec_module(mod)
+                                # search for attribute matching tool_name ignoring case/underscores
+                                for name in dir(mod):
+                                    if name.lower().replace("_", "") == tool_name.lower().replace("_", ""):
+                                        func = getattr(mod, name)
+                                        print(f"✅ Found tool {tool_name} in file {fname} as attribute {name}")
+                                        break
+                                if func is not None:
+                                    break
+                            except Exception:
+                                continue
+                except Exception:
+                    pass
 
         if func is None:
             return {"error": "tool_not_found", "tool": tool_name}
 
-        # Prepare input_data for the tool. If processor is available, ask the model to extract a JSON with variables
-        input_data = {}
-        # If the response contains more structured content, merge it
-        if isinstance(response, dict):
-            # if the model returned the parsed json already, include it
-            try:
-                parsed = response.get("content", [])[0].get("text")
-                if isinstance(parsed, dict):
-                    input_data.update(parsed)
-            except Exception:
-                pass
-
-        # If we have an intention string and a processor, ask the model to extract parameters as JSON
-        if processor is not None and isinstance(intention, str):
-            extractor_prompt = (
-                "Extrae en JSON los parámetros relevantes de la siguiente intención. "
-                "Devuelve únicamente un objeto JSON.\n\nINTENTION:\n" + intention + "\n\n" +
-                "Si no hay parámetros devuelve {}."
-            )
-            try:
-                extracted = processor.process_request(extractor_prompt)
-                # try to parse JSON from the model
-                try:
-                    parsed = json.loads(extracted)
-                    if isinstance(parsed, dict):
-                        input_data.update(parsed)
-                except Exception:
-                    # ignore parse error; pass raw extracted as 'extracted_text'
-                    input_data.setdefault("extracted_text", extracted)
-            except Exception:
-                pass
-
         # Ejecuta la función y captura su resultado
         try:
             # Prefer calling with signature (input_data, intention, processor, conn, session_id)
-            result = func(input_data, intention, processor, conn, session_id)
+            result = func(intention, processor, conn, session_id)
         except TypeError:
             # try more legacy signatures
             try:
-                result = func(input_data)
+                result = func(intention)
             except Exception as e:
                 try:
                     result = func()

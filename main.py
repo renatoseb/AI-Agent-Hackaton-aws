@@ -8,7 +8,10 @@ from db.tools import get_all_tools
 from db.conn import connect
 from db.messages import create_messages_table, insert_message
 import uuid
+import os
+from dotenv import load_dotenv, find_dotenv 
 
+load_dotenv(find_dotenv())
 
 def now_ts():
     return int(time.time() * 1000)

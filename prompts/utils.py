@@ -3,7 +3,7 @@ from typing import Dict, List, Any, Optional
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 import re
-from prompts.tool_selection import get_tool_selection_prompt
+from prompts.tool_selection_en import get_tool_selection_prompt
 
 class ResponseProcessor:
     def __init__(self, model, tokenizer):
@@ -65,7 +65,8 @@ def format_tool_selection_prompt(chat_hist: str, tools: str, processor: Response
     }
 
 def format_intention_catching_prompt(chat_hist: str, processor: ResponseProcessor) -> str:
-    from prompts.intention_catching import catch_intention
+    from prompts.intention_catching_en import catch_intention
     intention = catch_intention(chat_hist)
     response = processor.process_request(intention)
+    print('Intention catching prompt:', response)
     return response.strip()

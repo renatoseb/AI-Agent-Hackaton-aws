@@ -5,23 +5,25 @@ Output: {"product": {...}, "fda_matches": [...]}
 """
 import os
 from typing import Dict, Any
+from prompts.fda_product_extraction_en import extract_fda_query_fewshot
+from prompts.fda_resopnse_format_en import generate_fda_response_fewshot
 
-def Check_Producto(input_data: Dict[str, Any] = None, intention: str = None, processor=None, conn=None, session_id=None):
-    input_data = input_data or {}
-    q = input_data.get("q", "")
+def Check_Producto(intention: str = None, processor=None, conn=None, session_id=None):
+    q = None
 
-    if not q and processor and intention:
+    # If we have a processor, run the few-shot extractor to get a precise q (product name or GTIN)
+    if processor and intention:
         try:
-            prompt = "Extrae en JSON {'q': <query>} desde la intención:\n" + intention
+            prompt = extract_fda_query_fewshot(intention)
             out = processor.process_request(prompt)
             import json
             try:
                 parsed = json.loads(out)
-                q = parsed.get("q", q)
+                q = parsed.get("q") or q
             except Exception:
-                q = q or intention
+                q = q or out.strip()
         except Exception:
-            q = q or intention
+            pass
     mongo_uri = os.environ.get("MONGO_URI")
     if mongo_uri:
         try:
@@ -39,6 +41,15 @@ def Check_Producto(input_data: Dict[str, Any] = None, intention: str = None, pro
                     hit = list(col_fda.find({"$or": [{"product_name": {"$regex": ing, "$options": "i"}}, {"reason": {"$regex": ing, "$options": "i"}}]}, {"_id": 0}).limit(3))
                     if hit:
                         fda_hits.extend(hit)
+
+            # If processor available, format a natural language response
+            if processor:
+                try:
+                    prompt = generate_fda_response_fewshot(prod or {}, fda_hits)
+                    text = processor.process_request(prompt)
+                    return {"text": text}
+                except Exception:
+                    pass
 
             return {"product": prod, "fda_matches": fda_hits}
         except Exception as e:
