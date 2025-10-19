@@ -110,6 +110,14 @@ if __name__ == '__main__':
 
         },
         {
+            "toolname": "Consultar_Recalls",
+            "tooldescription": '''"Activa cuando el usuario pregunta sobre recalls, alertas, retiros de productos farmacéuticos, medicamentos retirados del mercado. Busca en datos de FDA (Estados Unidos) y DIGEMID (Perú). Keywords: recall, alerta, retiro, medicamento, fármaco, FDA, DIGEMID, seguridad, producto retirado, alerta sanitaria."'''
+        },
+        {
+            "toolname": "Pipeline_Ingestion", 
+            "tooldescription": '''"Activa cuando el usuario quiere actualizar, sincronizar o ejecutar la ingesta de datos de recalls farmacéuticos. Controla el pipeline de datos. Keywords: actualizar datos, sincronizar, ejecutar pipeline, ingesta, datos recientes, refresh, update."'''
+        },
+        {
             "toolname": "ClarifyFromUser",
             "tooldescription": '''"Activa cuando se requiere pedir aclaración al usuario si su mensaje no permite determinar con certeza qué herramienta usar."'''
         }
